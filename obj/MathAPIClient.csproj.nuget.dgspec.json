@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj": {}
+    "c:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj": {
+    "c:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj",
+        "projectUniqueName": "c:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj",
         "projectName": "MathAPIClient",
-        "projectPath": "C:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj",
+        "projectPath": "c:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj",
         "packagesPath": "C:\\Users\\ebada\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\obj\\",
+        "outputPath": "c:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,6 +49,16 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Firebase.Auth": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
