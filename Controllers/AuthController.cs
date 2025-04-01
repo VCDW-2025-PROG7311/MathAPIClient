@@ -1,3 +1,4 @@
+using System.Text;
 using Firebase.Auth;
 using MathAPIClient.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +9,10 @@ namespace MathAPIClient.Controllers
     public class AuthController : Controller
     {
         
-        FirebaseAuthProvider auth;
-
-        public AuthController()
+        private static HttpClient httpClient = new()
         {
-            auth = new FirebaseAuthProvider(new FirebaseConfig(Environment.GetEnvironmentVariable("FirebaseMathApp")));
-        }
+            BaseAddress = new Uri("http://localhost:5184/"),
+        };
 
         [HttpGet]
         public IActionResult Register()
@@ -24,33 +23,21 @@ namespace MathAPIClient.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(LoginModel login)
         {
-            try
+            StringContent jsonContent = new(JsonConvert.SerializeObject(login), Encoding.UTF8,"application/json"); 
+            HttpResponseMessage response = await httpClient.PostAsync("api/Auth/Register", jsonContent);
+
+            if (response.IsSuccessStatusCode)
             {
-                await auth.CreateUserWithEmailAndPasswordAsync(login.Email, login.Password);
-
-                var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(login.Email, login.Password);
-                string currentUserId = fbAuthLink.User.LocalId;
-
-                if (currentUserId != null)
-                {
-                    HttpContext.Session.SetString("currentUser", currentUserId);
-                    return RedirectToAction("Calculate", "Math");
-                }
-            }
-            catch (FirebaseAuthException ex)
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                AuthResponse? deserialisedResponse = JsonConvert.DeserializeObject<AuthResponse>(jsonResponse);
+                
+                HttpContext.Session.SetString("currentUser", deserialisedResponse.Token);
+                return RedirectToAction("Calculate", "Math");                
+            } else
             {
-                var firebaseEx = JsonConvert.DeserializeObject<FirebaseErrorModel>(ex.ResponseData);
-                ModelState.AddModelError(String.Empty, firebaseEx.error.message);
-                return View(login);
+                ViewBag.Result = "An error has occurred";
+                return View();
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(String.Empty, ex.Message);
-                return View(login);
-            }
-
-            return View();
-
         }
 
         [HttpGet]
@@ -62,33 +49,21 @@ namespace MathAPIClient.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel login)
         {
-            try
-            {
-                var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(login.Email, login.Password);
-                string currentUserId = fbAuthLink.User.LocalId;
+            StringContent jsonContent = new(JsonConvert.SerializeObject(login), Encoding.UTF8,"application/json"); 
+            HttpResponseMessage response = await httpClient.PostAsync("api/Auth/Login", jsonContent);
 
-                if (currentUserId != null)
-                {
-                    HttpContext.Session.SetString("currentUser", currentUserId);
-                    return RedirectToAction("Calculate", "Math");
-                }
-
-            }
-            catch (FirebaseAuthException ex)
+            if (response.IsSuccessStatusCode)
             {
-                var firebaseEx = JsonConvert.DeserializeObject<FirebaseErrorModel>(ex.ResponseData);
-                ModelState.AddModelError(String.Empty, firebaseEx.error.message);
-                Utils.AuthLogger.Instance.LogError(firebaseEx.error.message + " - User: " + login.Email + " - IP: " + HttpContext.Connection.RemoteIpAddress
-                    + " - Browser: " + Request.Headers.UserAgent);
-                return View(login);
-            }
-            catch (Exception ex)
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                AuthResponse? deserialisedResponse = JsonConvert.DeserializeObject<AuthResponse>(jsonResponse);
+                
+                HttpContext.Session.SetString("currentUser", deserialisedResponse.Token);
+                return RedirectToAction("Calculate", "Math");                
+            } else
             {
-                ModelState.AddModelError(String.Empty, ex.Message);
-                return View(login);
-            }
-
-            return View();
+                ViewBag.Result = "An error has occurred";
+                return View();
+            }            
         }
 
         [HttpGet]

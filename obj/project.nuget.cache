@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "R0xQMHkYcjc=",
+  "dgSpecHash": "50/xhpd39hM=",
   "success": true,
-  "projectFilePath": "c:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj",
+  "projectFilePath": "C:\\Users\\ebada\\OneDrive\\Desktop\\PROG7311 2025\\MathAPI Client\\MathAPIClient\\MathAPIClient.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ebada\\.nuget\\packages\\firebase.auth\\1.0.0\\firebase.auth.1.0.0.nupkg.sha512",
     "C:\\Users\\ebada\\.nuget\\packages\\microsoft.netcore.jit\\1.0.2\\microsoft.netcore.jit.1.0.2.nupkg.sha512",
