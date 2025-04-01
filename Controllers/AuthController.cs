@@ -31,7 +31,8 @@ namespace MathAPIClient.Controllers
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 AuthResponse? deserialisedResponse = JsonConvert.DeserializeObject<AuthResponse>(jsonResponse);
                 
-                HttpContext.Session.SetString("currentUser", deserialisedResponse.Token);
+                HttpContext.Session.SetString("currentUser", deserialisedResponse.UserId);
+                HttpContext.Session.SetString("MathJWT", deserialisedResponse.Token);
                 return RedirectToAction("Calculate", "Math");                
             } else
             {
@@ -57,11 +58,12 @@ namespace MathAPIClient.Controllers
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 AuthResponse? deserialisedResponse = JsonConvert.DeserializeObject<AuthResponse>(jsonResponse);
                 
-                HttpContext.Session.SetString("currentUser", deserialisedResponse.Token);
+                HttpContext.Session.SetString("currentUser", deserialisedResponse.UserId);
+                HttpContext.Session.SetString("MathJWT", deserialisedResponse.Token);
                 return RedirectToAction("Calculate", "Math");                
             } else
             {
-                ViewBag.Result = "An error has occurred";
+                ViewBag.Result = response.Content.ReadAsStringAsync().Result;
                 return View();
             }            
         }
@@ -70,6 +72,7 @@ namespace MathAPIClient.Controllers
         public IActionResult LogOut()
         {
             HttpContext.Session.Remove("currentUser");
+            HttpContext.Session.Remove("JWT");
             return RedirectToAction("Login");
         }
         

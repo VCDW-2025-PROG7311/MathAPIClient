@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MathAPIClient.Models;
 using Newtonsoft.Json;
 using System.Text;
+using System.Net.Http.Headers;
 
 namespace MathAPIClient.Controllers
 {
@@ -16,7 +17,7 @@ namespace MathAPIClient.Controllers
 
         public IActionResult Calculate()
         {
-            var token = HttpContext.Session.GetString("currentUser");
+            var token = HttpContext.Session.GetString("MathJWT");
 
             if (token == null)
             {
@@ -24,13 +25,11 @@ namespace MathAPIClient.Controllers
             }
 
             List<SelectListItem> operations = new List<SelectListItem> {
-            new SelectListItem { Value = "1", Text = "+" },
-            new SelectListItem { Value = "2", Text = "-" },
-            new SelectListItem { Value = "3", Text = "*" },
-            new SelectListItem { Value = "4", Text = "/" },
-
+                new SelectListItem { Value = "1", Text = "+" },
+                new SelectListItem { Value = "2", Text = "-" },
+                new SelectListItem { Value = "3", Text = "*" },
+                new SelectListItem { Value = "4", Text = "/" },
             };
-
             ViewBag.Operations = operations;
 
             return View();
@@ -40,19 +39,19 @@ namespace MathAPIClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Calculate(decimal? FirstNumber, decimal? SecondNumber,int Operation)
         {
-            var token = HttpContext.Session.GetString("currentUser");
-
+            var token = HttpContext.Session.GetString("MathJWT");
             if (token == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
+            var currentUser = HttpContext.Session.GetString("currentUser");
             decimal? Result = 0;
             MathCalculation mathCalculation;
 
             try
             {
-                mathCalculation = MathCalculation.Create(FirstNumber, SecondNumber, Operation, Result, token);
+                mathCalculation = MathCalculation.Create(FirstNumber, SecondNumber, Operation, Result, currentUser);
             }
             catch (Exception ex)
             {
@@ -63,6 +62,7 @@ namespace MathAPIClient.Controllers
             
             StringContent jsonContent = new(JsonConvert.SerializeObject(mathCalculation), Encoding.UTF8,"application/json"); 
             
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await httpClient.PostAsync("api/Math/PostCalculate", jsonContent);
 
             if (response.IsSuccessStatusCode)
@@ -70,7 +70,16 @@ namespace MathAPIClient.Controllers
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 MathCalculation? deserialisedResponse = JsonConvert.DeserializeObject<MathCalculation>(jsonResponse);
                 ViewBag.Result = deserialisedResponse.Result;
-                return View();
+
+            List<SelectListItem> operations = new List<SelectListItem> {
+                new SelectListItem { Value = "1", Text = "+" },
+                new SelectListItem { Value = "2", Text = "-" },
+                new SelectListItem { Value = "3", Text = "*" },
+                new SelectListItem { Value = "4", Text = "/" },
+            };
+            ViewBag.Operations = operations;
+
+            return View();
             } else
             {
                 ViewBag.Result = "An error has occurred";
@@ -80,14 +89,14 @@ namespace MathAPIClient.Controllers
 
         public async Task<IActionResult> History()
         {
-            var token = HttpContext.Session.GetString("currentUser");
-
+            var token = HttpContext.Session.GetString("MathJWT");
             if (token == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
             
-            HttpResponseMessage response = await httpClient.GetAsync("/api/Math/GetHistory?token=" + token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await httpClient.GetAsync("/api/Math/GetHistory");
 
             if (response.IsSuccessStatusCode)
             {
@@ -107,14 +116,14 @@ namespace MathAPIClient.Controllers
 
         public async Task<IActionResult> Clear()
         {
-            var token = HttpContext.Session.GetString("currentUser");
-
+            var token = HttpContext.Session.GetString("MathJWT");
             if (token == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
-            HttpResponseMessage response = await httpClient.DeleteAsync("/api/Math/DeleteHistory?token=" + token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await httpClient.DeleteAsync("/api/Math/DeleteHistory");
 
             if (response.IsSuccessStatusCode)
             {

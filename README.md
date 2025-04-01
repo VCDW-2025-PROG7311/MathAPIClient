@@ -24,3 +24,4 @@ It is recommended that you follow these steps in order:
 1. [Updating the History() HttpGet to read from API](/Guides/UpdatingHistory.md)
 1. [Updating the Clear() to delete using API](/Guides/UpdatingClear.md)
 1. Moving auth from client into API (you need to figure this out from the code)
+1. [Adding in JWT](/Guides/AddingJWT.md)
