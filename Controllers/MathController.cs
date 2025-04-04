@@ -107,7 +107,10 @@ namespace MathAPIClient.Controllers
                     ViewBag.HistoryMessage = "No history exists";
                 }
                 return View(deserialisedResponse);
-            }  else
+            } else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized){
+                ViewBag.HistoryMessage = "JWT token error!";
+                return View();
+            } else
             {
                 ViewBag.HistoryMessage = "No history to show";
                 return View();
